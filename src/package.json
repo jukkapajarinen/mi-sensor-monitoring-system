@@ -9,6 +9,6 @@
   "author": "Jukka Pajarinen",
   "license": "MIT",
   "dependencies": {
-    "@abandonware/noble": "^1.9.2-15"
+    "node-ble": "^1.9.0"
   }
 }

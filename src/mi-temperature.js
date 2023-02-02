@@ -1,21 +1,35 @@
-const noble = require('@abandonware/noble');
+const {createBluetooth} = require('node-ble');
 
-noble.on('stateChange', state => {
-  console.log("stateChange", state);
-  if (state === 'poweredOn') {
-    noble.startScanning([], true, async err => console.log(err));
+async function main() {
+  const {bluetooth, destroy} = createBluetooth();
+  const adapter = await bluetooth.defaultAdapter();
+
+  console.log("adapter", await adapter.getName());
+
+  if (! await adapter.isDiscovering()) {
+    await adapter.startDiscovery();
+
+    // setInterval(async () => {
+    //   console.log("devices", await adapter.devices());
+    // },1000);
+
+    const device = await adapter.waitDevice('A4:C1:38:55:3C:7B')
+    await device.connect()
+    const gattServer = await device.gatt()
+
+    console.log("device", await device.toString());
+    console.log("services", await gattServer.services());
+
+    (await gattServer.services()).forEach(async s => {
+      let service = await gattServer.getPrimaryService(s)
+      console.log("service:", s, "characterics:", await service.characteristics());
+      (await service.characteristics()).forEach(async c => {
+        let characteric = await service.getCharacteristic(c)
+        console.log("service:", s, "characterics:", c, "value:", await characteric.readValue());
+      });
+    });
+
   }
-});
+}
 
-noble.on('scanStart', () => {
-  console.log('scanStart');
-});
-
-noble.on('discover', peripheral => {
-  console.log("discover", peripheral);
-  noble.stopScanning();
-});
-
-noble.on('scanStop', () => {
-  console.log('scanStop');
-});
+main();
