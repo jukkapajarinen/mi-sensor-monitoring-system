@@ -4,31 +4,25 @@ async function main() {
   const {bluetooth, destroy} = createBluetooth();
   const adapter = await bluetooth.defaultAdapter();
 
-  console.log("adapter", await adapter.getName());
+  console.log("BLE adapter:", await adapter.getName());
 
   if (! await adapter.isDiscovering()) {
     await adapter.startDiscovery();
+    const device = await adapter.waitDevice('A4:C1:38:E0:0A:51');
+    await device.connect();
+    const gattServer = await device.gatt();
 
-    // setInterval(async () => {
-    //   console.log("devices", await adapter.devices());
-    // },1000);
+    console.log("BLE peripheral:", await device.toString());
 
-    const device = await adapter.waitDevice('A4:C1:38:55:3C:7B')
-    await device.connect()
-    const gattServer = await device.gatt()
+    const batteryService = await gattServer.getPrimaryService("0000180f-0000-1000-8000-00805f9b34fb");
+    const sensingService = await gattServer.getPrimaryService("0000181a-0000-1000-8000-00805f9b34fb");
+    const batteryCharacteric = await batteryService.getCharacteristic("00002a19-0000-1000-8000-00805f9b34fb");
+    const temperatureCharacteric = await sensingService.getCharacteristic("00002a1f-0000-1000-8000-00805f9b34fb");
+    const humidityCharacteric = await sensingService.getCharacteristic("00002a6f-0000-1000-8000-00805f9b34fb");
 
-    console.log("device", await device.toString());
-    console.log("services", await gattServer.services());
-
-    (await gattServer.services()).forEach(async s => {
-      let service = await gattServer.getPrimaryService(s)
-      console.log("service:", s, "characterics:", await service.characteristics());
-      (await service.characteristics()).forEach(async c => {
-        let characteric = await service.getCharacteristic(c)
-        console.log("service:", s, "characterics:", c, "value:", await characteric.readValue());
-      });
-    });
-
+    console.log("Battery:", await batteryCharacteric.readValue());
+    console.log("Temperature:", await temperatureCharacteric.readValue());
+    console.log("Humidity:", await humidityCharacteric.readValue());
   }
 }
 
