@@ -8,6 +8,11 @@ async function main() {
 
   if (! await adapter.isDiscovering()) {
     await adapter.startDiscovery();
+
+    // setInterval(async () => {
+    //   console.log("devices", await adapter.devices());
+    // },1000);
+
     const device = await adapter.waitDevice('A4:C1:38:E0:0A:51');
     await device.connect();
     const gattServer = await device.gatt();
