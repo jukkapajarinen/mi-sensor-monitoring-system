@@ -1,30 +1,24 @@
 const dotenv = require("dotenv");
-const mysql = require('mysql');
 const express = require('express');
+const db = require('./models/db');
+const dashboardController = require('./controllers/dashboard');
 
 dotenv.config();
-const connection = mysql.createConnection({
-  host: process.env.MARIADB_HOST,
-  user: process.env.MARIADB_USER,
-  password: process.env.MARIADB_PASSWORD,
-  database: process.env.MARIADB_DATABASE
+
+console.log('::: Mi Sensor Monitoring System :::');
+
+db.authenticate().then(() => {
+  console.log('Connection has been established successfully.');
+  db.sync();
+}).catch((error) => {
+  console.error('Unable to connect to the database: ', error);
 });
-connection.connect(err =>
-  err ? console.error('error connecting: ' + err.stack) :
-  console.log('connected as id ' + connection.threadId)
-);
 
 const app = express();
 app.set('view engine', 'ejs');
 app.set('views', __dirname);
-
-app.get('/', function(req, res) {
-  res.render('views/index', {
-    greeting: "Hello! 👋",
-    db_name: process.env.MARIADB_DATABASE,
-    db_conn: connection.threadId ? "connected" : "not connected"
-  });
-});
-
-app.listen(8080);
-console.log('Server is listening on port 8080');
+app.use('/', dashboardController);
+app.get('*', (req, res) => res.redirect('/dashboard'));
+app.listen(process.env.NODE_DOCKER_PORT,
+  console.log('Listening on port:', process.env.NODE_LOCAL_PORT)
+);

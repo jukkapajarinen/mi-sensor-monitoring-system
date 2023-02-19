@@ -22,19 +22,13 @@
           <li class="nav-item">
             <a class="nav-link active" aria-current="page" href="#">Dashboard</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Sensors</a>
-          </li>
       </div>
     </div>
   </nav>
 
   <main class="container">
     <h1><%= greeting %></h1>
-    <ul>
-      <li><b>.env db: </b><%= db_name %></li>
-      <li><b>db connection: </b><%= db_conn %></li>
-    </ul>
+    <p><%= sensorsData %></p>
   </main>
 </body>
 </html>
