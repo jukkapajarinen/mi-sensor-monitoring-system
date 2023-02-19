@@ -5,4 +5,7 @@
 
 # Other
 node_modules
-*.env*
+.dockerignore
+.gitignore
+docker-compose.yml
+Dockerfile

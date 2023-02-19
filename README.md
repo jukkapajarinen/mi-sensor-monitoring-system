@@ -2,6 +2,30 @@
 
 Xiaomi Mi Temperature and Humidity sensor monitoring system.
 
+## Environment variables
+
+Create an `.env` file with following variables.
+
+```
+MARIADB_PASSWORD=<your-value-here>
+MARIADB_ROOT_PASSWORD=<your-value-here>
+MARIADB_USER=<your-value-here>
+MARIADB_DATABASE=<your-value-here>
+MARIADB_LOCAL_PORT=3307
+MARIADB_DOCKER_PORT=3306
+NODE_LOCAL_PORT=3000
+NODE_DOCKER_PORT=8080
+MARIADB_HOST=mariadb
+```
+
+## Build and start docker containers
+
+```
+docker-compose up --build
+```
+
+Shortly, app will be served in `localhost:3000`.
+
 ## Author
 
 - [Jukka Pajarinen](https://www.jukkapajarinen.com)

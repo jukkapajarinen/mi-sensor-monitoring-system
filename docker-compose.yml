@@ -2,28 +2,27 @@ version: '3.8'
 
 services:
   mariadb:
-    image: 'mariadb:10.7.1'
+    image: 'mariadb:10.11.2'
     restart: always
     environment:
-      - MARIADB_PASSWORD=changeme
-      - MARIADB_ROOT_PASSWORD=changeme
-      - MARIADB_USER=admin
-      - MARIADB_DATABASE=grafana-temperature
+      - MARIADB_PASSWORD=${MARIADB_PASSWORD}
+      - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
+      - MARIADB_USER=${MARIADB_USER}
+      - MARIADB_DATABASE=${MARIADB_DATABASE}
+    ports:
+      - ${MARIADB_LOCAL_PORT}:${MARIADB_DOCKER_PORT}
+    volumes:
+      - db:/var/lib/mysql
 
-  grafana:
-    image: 'grafana/grafana:8.2.0'
+  app:
+    depends_on:
+      - mariadb
+    build:
+      context: .
+      dockerfile: ./Dockerfile
     restart: always
     ports:
-      - '3000:3000'
-    depends_on:
-      - mariadb
+      - ${NODE_LOCAL_PORT}:${NODE_DOCKER_PORT}
 
-  reader:
-    image: 'node:17.2.0'
-    restart: always
-    volumes:
-      - ./src:/usr/app/
-      - /usr/app/node_modules
-    command: node /usr/app/hello.js
-    depends_on:
-      - mariadb
+volumes:
+  db:
