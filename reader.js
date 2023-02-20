@@ -34,6 +34,9 @@ async function main() {
     console.log("Battery:", battery);
     console.log("Temperature:", temperature);
     console.log("Humidity:", humidity);
+
+    await device.disconnect();
+    destroy();
   }
 }
 
