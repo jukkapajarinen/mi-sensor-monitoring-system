@@ -1,27 +1,16 @@
 import dotenv from "dotenv";
 import express from "express";
-import db from "./models/db.js";
 import dashboardController from "./controllers/dashboard.js";
 import sensorsController from "./controllers/sensors.js";
 
 dotenv.config();
 
-const path = process.argv[1].replace("/app.js", "");
 const app = express();
 
-const main = async () => {
+async function main() {
   console.log("::: Mi Sensor Monitoring System :::");
-
-  try {
-    await db.authenticate();
-    db.sync();
-    console.log("Connection has been established successfully.");
-  } catch (error) {
-    console.error("Unable to connect to the database:", error);
-  }
-
   app.set("view engine", "ejs");
-  app.set("views", path);
+  app.set("views", ".");
   app.use("/", dashboardController);
   app.use("/", sensorsController);
   app.get("*", (req, res) => res.redirect("/dashboard"));
