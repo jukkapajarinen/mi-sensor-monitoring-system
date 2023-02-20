@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 import express from "express";
 import db from "./models/db.js";
 import dashboardController from "./controllers/dashboard.js";
+import sensorsController from "./controllers/sensors.js";
 
 dotenv.config();
 
@@ -22,6 +23,7 @@ const main = async () => {
   app.set("view engine", "ejs");
   app.set("views", path);
   app.use("/", dashboardController);
+  app.use("/", sensorsController);
   app.get("*", (req, res) => res.redirect("/dashboard"));
   app.listen(
     process.env.NODE_DOCKER_PORT,
