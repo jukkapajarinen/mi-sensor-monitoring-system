@@ -1,15 +1,13 @@
-const express = require('express');
-const sensor = require('../models/sensor');
-const sample = require('../models/sample');
+import express from "express";
+import sensor from "../models/sensor.js";
+
 const router = express.Router();
 
-router.get('/dashboard', async (req, res) => {
-  res.render('views/dashboard', {
+router.get("/dashboard", async (req, res) => {
+  res.render("views/dashboard", {
     greeting: "Hello! 👋",
-    sensorsData: JSON.stringify(
-      await sensor.findAll({include: 'samples'})
-    )
+    sensorsData: JSON.stringify(await sensor.findAll({ include: "samples" })),
   });
 });
 
-module.exports = router;
+export default router;

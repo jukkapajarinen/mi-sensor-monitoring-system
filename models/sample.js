@@ -1,13 +1,16 @@
-const { Sequelize } = require("sequelize");
-const db = require("./db.js");
-const { DataTypes } = Sequelize;
+import { DataTypes } from "sequelize";
+import db from "./db.js";
 
-const sample = db.define('samples', {
-  battery: { type: DataTypes.INTEGER },
-  temperature: { type: DataTypes.FLOAT },
-  humidity: { type: DataTypes.FLOAT }
-}, {
-  freezeTableName: true
-});
+const sample = db.define(
+  "samples",
+  {
+    battery: { type: DataTypes.INTEGER },
+    temperature: { type: DataTypes.FLOAT },
+    humidity: { type: DataTypes.FLOAT },
+  },
+  {
+    freezeTableName: true,
+  }
+);
 
-module.exports = sample;
+export default sample;

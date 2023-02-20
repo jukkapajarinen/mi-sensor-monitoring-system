@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "author": "Jukka Pajarinen",
   "license": "MIT",
+  "type": "module",
   "dependencies": {
     "bootstrap": "^5.2.3",
     "chartjs": "^0.3.24",

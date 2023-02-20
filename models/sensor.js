@@ -1,20 +1,24 @@
-const { Sequelize } = require("sequelize");
-const db = require("./db");
-const sample = require("./sample");
-const { DataTypes } = Sequelize;
+import { DataTypes } from "sequelize";
+import db from "./db.js";
+import sample from "./sample.js";
 
-const sensor = db.define('sensors', {
-  name: { type: DataTypes.STRING },
-  mac: { type: DataTypes.STRING }
-}, {
-  freezeTableName: true
-});
+const sensor = db.define(
+  "sensors",
+  {
+    name: { type: DataTypes.STRING },
+    mac: { type: DataTypes.STRING },
+  },
+  {
+    freezeTableName: true,
+  }
+);
 
 sensor.hasMany(sample, {
-  onDelete: 'cascade',
+  onDelete: "cascade",
   foreignKey: {
-    field: 'sensorId',
+    field: "sensorId",
     allowNull: false,
-}});
+  },
+});
 
-module.exports = sensor;
+export default sensor;
