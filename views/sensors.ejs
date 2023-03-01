@@ -30,8 +30,16 @@
   </nav>
 
   <main class="container">
-    <h1>Available BLE devices</h1>
-    <h2>Saved BLE devices</h2>
+    <div class="row">
+      <div class="col-6">
+        <h2>Available BLE devices:</h2>
+        <pre><code><%= availableDevices %></code></pre>
+      </div>
+      <div class="col-6">
+        <h2>Saved BLE devices:</h2>
+        <pre><code><%= savedDevices %></code></pre>
+      </div>
+    </div>
   </main>
 </body>
 </html>
