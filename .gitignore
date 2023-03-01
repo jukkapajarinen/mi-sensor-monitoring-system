@@ -5,4 +5,5 @@
 
 # Other
 node_modules
+dist
 *.env*

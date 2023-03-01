@@ -13,7 +13,8 @@ async function main() {
     //   console.log("devices", await adapter.devices());
     // },1000);
 
-    const device = await adapter.waitDevice("A4:C1:38:E0:0A:51");
+    // const device = await adapter.waitDevice("A4:C1:38:E0:0A:51");
+    const device = await adapter.waitDevice("A4:C1:38:E9:49:32");
     await device.connect();
     const gattServer = await device.gatt();
 
