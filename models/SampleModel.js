@@ -5,14 +5,14 @@ class SampleModel {
     if ([sensorId, battery, temperature, humidity].some(undefined)) {
       throw new Error("Cannot create sample with undefined value(s).");
     }
-    return knex.insert({'sensorId': sensorId, 'battery': battery, 'temperature': temperature, 'humidity': humidity}).into('samples');
+    return knex.insert({'sensor_id': sensorId, 'battery': battery, 'temperature': temperature, 'humidity': humidity}).into('samples');
   }
 
   static read(sensorId) {
     if ([sensorId].some(undefined)) {
       throw new Error("Cannot read sample with undefined value.");
     }
-    return knex.select().from('samples').where('sensorId', sensorId);
+    return knex.select().from('samples').where('sensor_id', sensorId);
   }
 
   static readById(id) {
