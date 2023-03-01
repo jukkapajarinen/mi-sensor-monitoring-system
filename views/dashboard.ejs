@@ -30,8 +30,16 @@
   </nav>
 
   <main class="container">
-    <h1><%= greeting %></h1>
-    <p><%= sensorsData %></p>
+    <div class="row">
+      <div class="col-6">
+        <h2>Sensors:</h2>
+        <pre><code><%= sensorsData %></code></pre>
+      </div>
+      <div class="col-6">
+        <h2>Samples:</h2>
+        <pre><code><%= samplesData %></code></pre>
+      </div>
+    </div>
   </main>
 </body>
 </html>
