@@ -51,7 +51,7 @@
             </td>
           </tr><% }); %>
           <tr>
-            <th scope="row"><%= savedSensors.reduce((a, b) => a.id > b.id ? a : b).id + 1 %></th>
+            <th scope="row">new</th>
             <td><input type="text" class="form-control" name="input_name_new" placeholder="Enter name ..."></td>
             <td><input type="text" class="form-control" name="input_mac_new" placeholder="Enter MAC ..."></td>
             <td><button type="submit" class="btn btn-success" name="action" value="create_new">Create</button></td>
