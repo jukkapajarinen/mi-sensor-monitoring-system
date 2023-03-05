@@ -1,56 +1,63 @@
 import { createBluetooth } from "node-ble";
+import SensorModel from "./models/SensorModel.js";
 
 async function main() {
+  console.log("BLE reading started.", new Date().toUTCString());
+
+  const sensors = new SensorModel();
+  const savedDevices = (await sensors.readAll()).map(x => x.mac);
   const { bluetooth, destroy } = createBluetooth();
   const adapter = await bluetooth.defaultAdapter();
 
-  console.log("BLE adapter:", await adapter.getName());
+  console.log("Saved BLE Devices:", savedDevices);
 
-  if (!(await adapter.isDiscovering())) {
-    await adapter.startDiscovery();
+  for (const mac of savedDevices) {
+    try {
+      if (!(await adapter.isDiscovering())) {
+        await adapter.startDiscovery();
+      }
 
-    // setInterval(async () => {
-    //   console.log("devices", await adapter.devices());
-    // },1000);
+      console.log("Trying to connect to:", mac);
+      const device = await adapter.waitDevice(mac);
+      await device.connect();
+      const gattServer = await device.gatt();
 
-    // const device = await adapter.waitDevice("A4:C1:38:E0:0A:51");
-    const device = await adapter.waitDevice("A4:C1:38:E9:49:32");
-    await device.connect();
-    const gattServer = await device.gatt();
+      console.log("Succesfully connected to:", await device.toString());
 
-    console.log("BLE peripheral:", await device.toString());
+      // Uuids are checked for LYWSD03MMC with custom ATC firmware
+      const batteryService = await gattServer.getPrimaryService(
+        "0000180f-0000-1000-8000-00805f9b34fb"
+      );
+      const sensingService = await gattServer.getPrimaryService(
+        "0000181a-0000-1000-8000-00805f9b34fb"
+      );
+      const batteryCharacteric = await batteryService.getCharacteristic(
+        "00002a19-0000-1000-8000-00805f9b34fb"
+      );
+      const temperatureCharacteric = await sensingService.getCharacteristic(
+        "00002a1f-0000-1000-8000-00805f9b34fb"
+      );
+      const humidityCharacteric = await sensingService.getCharacteristic(
+        "00002a6f-0000-1000-8000-00805f9b34fb"
+      );
 
-    // Uuids are checked for LYWSD03MMC with custom ATC firmware
-    const batteryService = await gattServer.getPrimaryService(
-      "0000180f-0000-1000-8000-00805f9b34fb"
-    );
-    const sensingService = await gattServer.getPrimaryService(
-      "0000181a-0000-1000-8000-00805f9b34fb"
-    );
-    const batteryCharacteric = await batteryService.getCharacteristic(
-      "00002a19-0000-1000-8000-00805f9b34fb"
-    );
-    const temperatureCharacteric = await sensingService.getCharacteristic(
-      "00002a1f-0000-1000-8000-00805f9b34fb"
-    );
-    const humidityCharacteric = await sensingService.getCharacteristic(
-      "00002a6f-0000-1000-8000-00805f9b34fb"
-    );
+      // Sensory values are advertised as little endian bytes
+      const battery = (await batteryCharacteric.readValue()).readUInt8();
+      const temperature =
+        (await temperatureCharacteric.readValue()).readInt16LE() / 10;
+      const humidity =
+        (await humidityCharacteric.readValue()).readInt16LE() / 100;
 
-    // Sensory values are advertised as little endian bytes
-    const battery = await (await batteryCharacteric.readValue()).readUInt8();
-    const temperature =
-      (await (await temperatureCharacteric.readValue()).readInt16LE()) / 10;
-    const humidity =
-      (await (await humidityCharacteric.readValue()).readInt16LE()) / 100;
+      console.log(`Battery: ${battery}, temperature: ${temperature}, humidity: ${humidity}, ${new Date().toUTCString()}`);
 
-    console.log("Battery:", battery);
-    console.log("Temperature:", temperature);
-    console.log("Humidity:", humidity);
-
-    await device.disconnect();
-    destroy();
+      await device.disconnect();
+    } catch (error) {
+      console.error("Error happened.", error);
+    }
   }
-};
+  destroy();
+  console.log("Processed all BLE devices.");
+}
 
 main();
+setInterval(main, 60 * 1000);
