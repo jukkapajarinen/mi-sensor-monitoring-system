@@ -7,7 +7,7 @@ class SensorModel {
   }
 
   async create(deviceName, macAddress) {
-    if ([deviceName, macAddress].some(undefined)) {
+    if ([deviceName, macAddress].includes(undefined)) {
       throw new Error("Cannot create sensor with undefined value(s).");
     }
     return await this.db
@@ -16,7 +16,7 @@ class SensorModel {
   }
 
   async read(deviceName, macAddress) {
-    if ([deviceName, macAddress].some(undefined)) {
+    if ([deviceName, macAddress].includes(undefined)) {
       throw new Error("Cannot read sensor with undefined value(s).");
     }
     return await this.db
@@ -28,7 +28,7 @@ class SensorModel {
   }
 
   async readById(id) {
-    if ([id].some(undefined)) {
+    if ([id].includes(undefined)) {
       throw new Error("Cannot read sensor with undefined value.");
     }
     return await this.db.select().from("sensors").where("id", id).limit(1);
@@ -39,16 +39,17 @@ class SensorModel {
   }
 
   async update(id, deviceName, macAddress) {
-    if ([id, deviceName, macAddress].some(undefined)) {
+    if ([id, deviceName, macAddress].includes(undefined)) {
       throw new Error("Cannot update sensor with undefined value(s).");
     }
     return await this.db
+      .table("sensors")
       .update({ name: deviceName, mac: macAddress })
       .where("id", id);
   }
 
   async delete(id) {
-    if ([id].some(undefined)) {
+    if ([id].includes(undefined)) {
       throw new Error("Cannot delete sensor with undefined value.");
     }
     return await this.db.del().from("sensors").where("id", id);

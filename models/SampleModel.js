@@ -7,7 +7,7 @@ class SampleModel {
   }
 
   async create(sensorId, battery, temperature, humidity) {
-    if ([sensorId, battery, temperature, humidity].some(undefined)) {
+    if ([sensorId, battery, temperature, humidity].includes(undefined)) {
       throw new Error("Cannot create sample with undefined value(s).");
     }
 
@@ -22,7 +22,7 @@ class SampleModel {
   }
 
   async read(sensorId) {
-    if ([sensorId].some(undefined)) {
+    if ([sensorId].includes(undefined)) {
       throw new Error("Cannot read sample with undefined value.");
     }
 
@@ -30,7 +30,7 @@ class SampleModel {
   }
 
   async readById(id) {
-    if ([id].some(undefined)) {
+    if ([id].includes(undefined)) {
       throw new Error("Cannot read sample with undefined value.");
     }
 
@@ -42,11 +42,12 @@ class SampleModel {
   }
 
   async update(id, battery, temperature, humidity) {
-    if ([id, battery, temperature, humidity].some(undefined)) {
+    if ([id, battery, temperature, humidity].includes(undefined)) {
       throw new Error("Cannot update sample with undefined value(s).");
     }
 
     return await this.db
+      .table("samples")
       .update({
         battery: battery,
         temperature: temperature,
@@ -56,7 +57,7 @@ class SampleModel {
   }
 
   async delete(id) {
-    if ([id].some(undefined)) {
+    if ([id].includes(undefined)) {
       throw new Error("Cannot delete sample with undefined value.");
     }
 

@@ -12,6 +12,7 @@
     "seed": "npx knex seed:run"
   },
   "dependencies": {
+    "body-parser": "^1.20.2",
     "bootstrap": "^5.2.3",
     "chartjs": "^0.3.24",
     "dotenv": "^16.0.3",

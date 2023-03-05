@@ -30,16 +30,35 @@
   </nav>
 
   <main class="container">
-    <div class="row">
-      <div class="col-6">
-        <h2>Available BLE devices:</h2>
-        <pre><code><%= availableDevices %></code></pre>
-      </div>
-      <div class="col-6">
-        <h2>Saved BLE devices:</h2>
-        <pre><code><%= savedDevices %></code></pre>
-      </div>
-    </div>
+    <form action="/sensors" method="post">
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col">MAC</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% savedSensors.forEach(sensor => { %><tr>
+            <th scope="row"><%= sensor.id %></th>
+            <td><input type="text" class="form-control" name="input_name_<%= sensor.id %>" placeholder="Enter name ..." value="<%= sensor.name %>"></td>
+            <td><input type="text" class="form-control" name="input_mac_<%= sensor.id %>" placeholder="Enter MAC ..." value="<%= sensor.mac %>"></td>
+            <td>
+              <button type="submit" class="btn btn-primary" name="action" value="edit_<%= sensor.id %>">Edit</button>
+              <button type="submit" class="btn btn-danger" name="action" value="delete_<%= sensor.id %>">Delete</button>
+            </td>
+          </tr><% }); %>
+          <tr>
+            <th scope="row"><%= savedSensors.reduce((a, b) => a.id > b.id ? a : b).id + 1 %></th>
+            <td><input type="text" class="form-control" name="input_name_new" placeholder="Enter name ..."></td>
+            <td><input type="text" class="form-control" name="input_mac_new" placeholder="Enter MAC ..."></td>
+            <td><button type="submit" class="btn btn-success" name="action" value="create_new">Create</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </form>
   </main>
 </body>
 </html>
