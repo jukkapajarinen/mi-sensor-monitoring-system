@@ -6,7 +6,7 @@
   "main": "app.js",
   "type": "module",
   "scripts": {
-    "start": "node app.js",
+    "start": "concurrently \"node reader.js\" \"node app.js\"",
     "migrate": "npx knex migrate:latest",
     "rollback": "npx knex migrate:rollback",
     "seed": "npx knex seed:run"
@@ -15,6 +15,7 @@
     "body-parser": "^1.20.2",
     "bootstrap": "^5.2.3",
     "chartjs": "^0.3.24",
+    "concurrently": "^7.6.0",
     "dotenv": "^16.0.3",
     "ejs": "^3.1.8",
     "express": "^4.18.2",
