@@ -1,24 +1,26 @@
 import { createBluetooth } from "node-ble";
 import SensorModel from "./models/SensorModel.js";
+import SampleModel from "./models/SampleModel.js";
 
 async function main() {
-  console.log("BLE reading started.", new Date().toUTCString());
+  console.log("::: BLE reading started.", new Date().toUTCString());
 
   const sensors = new SensorModel();
-  const savedDevices = (await sensors.readAll()).map(x => x.mac);
+  const samples = new SampleModel();
+  const savedSensors = (await sensors.readAll());
   const { bluetooth, destroy } = createBluetooth();
   const adapter = await bluetooth.defaultAdapter();
 
-  console.log("Saved BLE Devices:", savedDevices);
+  console.log("Saved BLE Devices:", savedSensors.map(x => x.mac));
 
-  for (const mac of savedDevices) {
+  for (const sensor of savedSensors) {
     try {
       if (!(await adapter.isDiscovering())) {
         await adapter.startDiscovery();
       }
 
-      console.log("Trying to connect to:", mac);
-      const device = await adapter.waitDevice(mac);
+      console.log("Trying to connect to:", sensor.mac);
+      const device = await adapter.waitDevice(sensor.mac);
       await device.connect();
       const gattServer = await device.gatt();
 
@@ -48,7 +50,8 @@ async function main() {
       const humidity =
         (await humidityCharacteric.readValue()).readInt16LE() / 100;
 
-      console.log(`Battery: ${battery}, temperature: ${temperature}, humidity: ${humidity}, ${new Date().toUTCString()}`);
+      console.log(`Battery: ${battery}, temperature: ${temperature}, humidity: ${humidity}`);
+      samples.create(sensor.id, battery, temperature, humidity);
 
       await device.disconnect();
     } catch (error) {
@@ -57,7 +60,7 @@ async function main() {
   }
   destroy();
   console.log("Processed all BLE devices.");
+  setTimeout(main, 30 * 1000);
 }
 
 main();
-setInterval(main, 60 * 1000);

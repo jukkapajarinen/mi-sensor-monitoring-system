@@ -6,7 +6,7 @@ import DashboardController from "./controllers/DashboardController.js";
 import SensorsController from "./controllers/SensorsController.js";
 
 async function main() {
-  console.log("Web server started.", new Date().toUTCString());
+  console.log("::: Web server started.", new Date().toUTCString());
 
   dotenv.config();
   const app = new express();
