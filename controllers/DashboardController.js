@@ -10,9 +10,17 @@ class DashboardController extends express.Router {
     this.sensors = new SensorModel();
 
     this.get("/dashboard", async (req, res) => {
+      const sensors = await this.sensors.readAll();
+      const samples = await this.samples.readAll();
+      const sensorsWithSamples = sensors.map(sensor => {
+        return {
+          ...sensor,
+          samples: samples.filter(sample => sample.sensor_id === sensor.id)
+        }
+      });
+
       res.render("views/dashboard", {
-        sensorsData: JSON.stringify(await this.sensors.readAll(), null, 2),
-        samplesData: JSON.stringify(await this.samples.readAll(), null, 2),
+        dashboardData: sensorsWithSamples
       });
     });
   }

@@ -1,7 +1,6 @@
 import dotenv from "dotenv";
 import express from "express";
 import bodyparser from "body-parser";
-import helmet from "helmet";
 import DashboardController from "./controllers/DashboardController.js";
 import SensorsController from "./controllers/SensorsController.js";
 
@@ -12,7 +11,6 @@ async function main() {
   const app = new express();
   app.set("view engine", "ejs");
   app.set("views", ".");
-  app.use(helmet());
   app.use(bodyparser.urlencoded({extended:true}));
   app.use("/", new DashboardController());
   app.use("/", new SensorsController());
