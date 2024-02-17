@@ -7,24 +7,32 @@ Xiaomi Mi Temperature and Humidity sensor monitoring system.
 Create an `.env` file with following variables.
 
 ```
-MARIADB_PASSWORD=<your-value-here>
-MARIADB_ROOT_PASSWORD=<your-value-here>
-MARIADB_USER=<your-value-here>
-MARIADB_DATABASE=<your-value-here>
-MARIADB_LOCAL_PORT=3307
-MARIADB_DOCKER_PORT=3306
 NODE_LOCAL_PORT=3000
 NODE_DOCKER_PORT=8080
-MARIADB_HOST=mariadb
+SQLITE_FILE_PATH=/home/node/app/database.sqlite 
+```
+
+## Create empty SQLite file
+
+```
+touch misensormonitorsystem.sqlite
 ```
 
 ## Build and start docker containers
 
 ```
-docker-compose up --build
+docker-compose up
 ```
 
-Shortly, app will be served in `localhost:3000`.
+Shortly, app will be served in [localhost:3000](localhost:3000)
+
+## Run Knex migrations and seeds
+
+```
+docker exec -it <container-id> npm run migrate
+docker exec -it <container-id> npm run seeds
+docker exec -it <container-id> npm run rollback
+```
 
 ## Author
 
@@ -32,7 +40,7 @@ Shortly, app will be served in `localhost:3000`.
 
 ## [License](LICENSE.md)
 
-Copyright (c) 2023 Jukka Pajarinen
+Copyright (c) 2024 Jukka Pajarinen
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 

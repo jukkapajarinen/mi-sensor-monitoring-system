@@ -3,13 +3,9 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const config = {
-  client: "mysql",
+  client: "sqlite3",
   connection: {
-    database: process.env.MARIADB_DATABASE,
-    user: process.env.MARIADB_USER,
-    password: process.env.MARIADB_PASSWORD,
-    host: process.env.MARIADB_HOST,
-    port: process.env.MARIADB_DOCKER_PORT
+    filename: process.env.SQLITE_FILE_PATH,
   },
   migrations: {
     directory: `./migrations`,
@@ -17,6 +13,7 @@ const config = {
   seeds: {
     directory: `./seeds`,
   },
+  useNullAsDefault: true,
 };
 
 export default config;
