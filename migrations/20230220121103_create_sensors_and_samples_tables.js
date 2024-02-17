@@ -8,6 +8,7 @@ export function up({ schema, fn }) {
       table.increments('id').notNullable();
       table.string("name").notNullable();
       table.string("mac").notNullable();
+      table.boolean("reachable").notNullable();
       table.timestamp("created_at").notNullable().defaultTo(fn.now());
       table.timestamp("updated_at").notNullable().defaultTo(fn.now());
     })

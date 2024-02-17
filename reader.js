@@ -7,11 +7,11 @@ async function main() {
 
   const sensors = new SensorModel();
   const samples = new SampleModel();
-  const savedSensors = (await sensors.readAll());
+  const savedSensors = (await sensors.readAll()).sort(() => Math.random() - 0.5);
   const { bluetooth, destroy } = createBluetooth();
   const adapter = await bluetooth.defaultAdapter();
 
-  console.log("Saved BLE Devices:", savedSensors.map(x => x.mac));
+  console.log("List of BLE Devices:", savedSensors.map(x => x.mac));
 
   for (const sensor of savedSensors) {
     try {
@@ -19,12 +19,12 @@ async function main() {
         await adapter.startDiscovery();
       }
 
-      console.log("Trying to connect to:", sensor.mac);
-      const device = await adapter.waitDevice(sensor.mac);
+      console.log("Connecting to:", sensor.mac);
+      const device = await adapter.waitDevice(sensor.mac, 5 * 1000);
       await device.connect();
       const gattServer = await device.gatt();
 
-      console.log("Succesfully connected to:", await device.toString());
+      console.log("Connected to:", await device.toString());
 
       // Uuids are checked for LYWSD03MMC with custom ATC firmware
       const batteryService = await gattServer.getPrimaryService(
@@ -50,16 +50,25 @@ async function main() {
       const humidity =
         (await humidityCharacteric.readValue()).readInt16LE() / 100;
 
-      console.log(`Battery: ${battery}, temperature: ${temperature}, humidity: ${humidity}`);
+      console.log(`* Battery %: ${battery}`);
+      console.log(`* Temperature °C: ${temperature}`);
+      console.log(`* Humidity %: ${humidity}`);
+
       samples.create(sensor.id, battery, temperature, humidity);
+      sensors.update(sensor.id, sensor.name, sensor.mac, true)
 
       await device.disconnect();
     } catch (error) {
-      console.error("Error happened.", error);
+      if (error.message === 'operation timed out') {
+        console.log("Connecting timeout:", sensor.mac);
+        sensors.update(sensor.id, sensor.name, sensor.mac, false)
+      } else {
+        console.error(error);
+      }
     }
   }
   destroy();
-  console.log("Processed all BLE devices.");
+  console.log("Processed everything. Redo in 30 seconds.");
   setTimeout(main, 30 * 1000);
 }
 

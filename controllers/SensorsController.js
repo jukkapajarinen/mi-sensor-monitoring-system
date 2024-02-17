@@ -20,9 +20,9 @@ class SensorsController extends express.Router {
       const mac = req.body[`input_mac_${id}`];
 
       if (action === "create") {
-        await this.sensors.create(name, mac);
+        await this.sensors.create(name, mac, true);
       } else if (action === "edit") {
-        await this.sensors.update(id, name, mac);
+        await this.sensors.update(id, name, mac, true);
       } else if (action === "delete") {
         await this.sensors.delete(id);
       }

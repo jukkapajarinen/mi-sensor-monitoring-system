@@ -32,9 +32,29 @@
 
   <main class="container-fluid">
     <div class="row">
-      <% dashboardData.forEach(sensor => { %><div class="col-md-6 py-3">
-        <h2 class="text-center"><%= sensor.name %> [<%= sensor.mac %>]</h2>
-        <canvas class="chart" id="chart_<%= sensor.id %>" data-samples="<%= JSON.stringify(sensor.samples) %>"></canvas>
+      <% dashboardData.forEach(sensor => { %><div class="col-md-3 py-3">
+        <div class="card">
+          <div class="card-header text-center<%= !sensor.reachable ? ' text-danger' : '' %>">
+            <h3 class="mb-0"><%= sensor.name %></h3>
+            <p class="mb-0">[<%= sensor.mac %>]</p>
+          </div>
+          <div class="card-body">
+            <canvas class="chart" id="chart_<%= sensor.id %>" data-samples="<%= JSON.stringify(sensor.samples) %>"></canvas>
+          </div>
+          <div class="card-footer">
+            <ul class="list-group list-group-horizontal justify-content-between">
+              <li class="list-group-item text-center flex-grow-1<%= !sensor.reachable ? ' text-danger' : '' %>">
+                <strong><%= sensor.samples.length ? sensor.samples[sensor.samples.length - 1].temperature : '-' %></strong> °C
+              </li>
+              <li class="list-group-item text-center flex-grow-1<%= !sensor.reachable ? ' text-danger' : '' %>">
+                <strong><%= sensor.samples.length ? sensor.samples[sensor.samples.length - 1].humidity : '-' %></strong> hum-%
+              </li>
+              <li class="list-group-item text-center flex-grow-1<%= !sensor.reachable ? ' text-danger' : '' %>">
+                <strong><%= sensor.samples.length ? sensor.samples[sensor.samples.length - 1].battery : '-' %></strong> bat-%
+              </li>
+            </ul>
+          </div>
+        </div>
       </div><% }); %>
     </div>
   </main>

@@ -21,7 +21,7 @@ touch misensormonitorsystem.sqlite
 ## Build and start docker containers
 
 ```
-docker-compose up
+docker-compose up --build
 ```
 
 Shortly, app will be served in [localhost:3000](localhost:3000)

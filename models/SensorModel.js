@@ -6,16 +6,16 @@ class SensorModel {
     this.db = knex(knexfile);
   }
 
-  async create(deviceName, macAddress) {
-    if ([deviceName, macAddress].includes(undefined)) {
+  async create(deviceName, macAddress, reachable) {
+    if ([deviceName, macAddress, reachable].includes(undefined)) {
       throw new Error("Cannot create sensor with undefined value(s).");
     }
     return await this.db
-      .insert({ name: deviceName, mac: macAddress })
+      .insert({ name: deviceName, mac: macAddress, reachable: reachable })
       .into("sensors");
   }
 
-  async read(deviceName, macAddress) {
+  async read(deviceName, macAddress, reachable) {
     if ([deviceName, macAddress].includes(undefined)) {
       throw new Error("Cannot read sensor with undefined value(s).");
     }
@@ -24,6 +24,7 @@ class SensorModel {
       .from("sensors")
       .where("name", deviceName)
       .andWhere("mac", macAddress)
+      .andWhere("reachable", reachable)
       .limit(1);
   }
 
@@ -38,13 +39,13 @@ class SensorModel {
     return await this.db.select().from("sensors");
   }
 
-  async update(id, deviceName, macAddress) {
-    if ([id, deviceName, macAddress].includes(undefined)) {
+  async update(id, deviceName, macAddress, reachable) {
+    if ([id, deviceName, macAddress, reachable].includes(undefined)) {
       throw new Error("Cannot update sensor with undefined value(s).");
     }
     return await this.db
       .table("sensors")
-      .update({ name: deviceName, mac: macAddress })
+      .update({ name: deviceName, mac: macAddress, reachable: reachable })
       .where("id", id);
   }
 
