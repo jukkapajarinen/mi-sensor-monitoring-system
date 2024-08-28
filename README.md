@@ -1,37 +1,19 @@
 # Mi Sensor Monitoring System
 
-Xiaomi Mi Temperature and Humidity sensor monitoring system.
+Laravel Xiaomi Mi Temperature and Humidity sensor monitoring system.
 
-## Environment variables
-
-Create an `.env` file with following variables.
+## Commands
 
 ```
-NODE_LOCAL_PORT=3000
-NODE_DOCKER_PORT=8080
-SQLITE_FILE_PATH=/home/node/app/database.sqlite 
+php artisan serve
+php artisan migrate
+php artisan route:list
+php artisan schedule:list
+php artisan schedule:run
+crontab -e
 ```
-
-## Create empty SQLite file
-
 ```
-touch misensormonitorsystem.sqlite
-```
-
-## Build and start docker containers
-
-```
-docker-compose up --build
-```
-
-Shortly, app will be served in [localhost:3000](localhost:3000)
-
-## Run Knex migrations and seeds
-
-```
-docker exec -it <container-id> npm run migrate
-docker exec -it <container-id> npm run seeds
-docker exec -it <container-id> npm run rollback
+* * * * * /usr/bin/php /path/to/artisan schedule:run >> /dev/null 2>&1
 ```
 
 ## Author
