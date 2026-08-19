@@ -5,15 +5,15 @@ Laravel Xiaomi Mi Temperature and Humidity sensor monitoring system.
 ## Commands
 
 ```
-php artisan serve
-php artisan migrate
-php artisan route:list
-php artisan schedule:list
-php artisan schedule:run
 crontab -e
 ```
 ```
 * * * * * /usr/bin/php /path/to/artisan schedule:run >> /dev/null 2>&1
+```
+
+```
+php artisan migrate
+php artisan schedule:run
 ```
 
 ## Author
