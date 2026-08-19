@@ -28,7 +28,7 @@ class SensorController
             'mac' => 'required|string|max:255|unique:sensors,mac',
         ]);
 
-        Sensor::create($request->only('name', 'mac'));
+        Sensor::create($request->only('name', 'mac') + ['reachable' => false]);
 
         return redirect()->route('sensors.list')->with('success', 'Sensor added successfully.');
     }

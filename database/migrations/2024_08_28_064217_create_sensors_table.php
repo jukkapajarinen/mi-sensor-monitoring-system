@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('mac')->unique();
-            $table->boolean('reachable')->default(true);
+            $table->boolean('reachable')->default(false);
             $table->timestamps();
         });
     }
