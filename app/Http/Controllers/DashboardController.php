@@ -6,9 +6,21 @@ use App\Models\Sensor;
 
 class DashboardController
 {
-  public function index()
-  {
-      $sensors = Sensor::with('data')->get();
-      return view('dashboard', compact('sensors'));
-  }
+    /**
+     * Number of most recent readings to show per sensor.
+     */
+    private const HISTORY_SIZE = 30;
+
+    public function index()
+    {
+        $sensors = Sensor::with(['data' => function ($query) {
+            $query->latest()->limit(self::HISTORY_SIZE);
+        }])->get();
+
+        // The eager-loaded data comes back newest-first; flip it to
+        // chronological order so charts read left (old) to right (new).
+        $sensors->each(fn ($sensor) => $sensor->setRelation('data', $sensor->data->reverse()->values()));
+
+        return view('dashboard', compact('sensors'));
+    }
 }

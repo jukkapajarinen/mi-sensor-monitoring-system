@@ -1,92 +1,114 @@
 @extends('layouts.app')
 
-@section('header')
-    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-        {{ __('Dashboard') }}
-    </h2>
-@endsection
+@section('title', 'Dashboard')
 
 @section('content')
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            @if($sensors->isEmpty())
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            @if ($sensors->isEmpty())
                 <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                    <div class="max-w-xl">
-                        <p class="text-sm text-gray-600">
-                            No sensors available.
-                        </p>
-                    </div>
+                    <p class="text-sm text-gray-600">No sensors available.</p>
                 </div>
             @else
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    @foreach($sensors as $sensor)
-                        <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                            <div class="max-w-xl">
-                                <h3 class="text-lg font-medium {{ $sensor->reachable ? 'text-gray-900' : 'text-red-500' }}">
-                                    {{ $sensor->name }} ({{ $sensor->mac }})
-                                </h3>
-
-                                @if($sensor->data->isNotEmpty())
-                                    <!-- Chart canvas -->
-                                    <div class="mt-4">
-                                      <canvas class="chart" id="chart_{{ $sensor->id }}"
-                                              data-chartdata="{{ $sensor->data->toJson() }}"></canvas>
-                                    </div>
-                                    @php
-                                        $latestData = $sensor->data->last();
-                                    @endphp
-                                    <div class="mt-4 flex space-x-4">
-                                      <div class="flex-1">
-                                          <p class="text-sm text-gray-600">
-                                              <strong>Battery:</strong> {{ $latestData->battery }}%
-                                          </p>
-                                      </div>
-                                      <div class="flex-1">
-                                          <p class="text-sm text-gray-600">
-                                              <strong>Temp:</strong> {{ $latestData->temperature }}°C
-                                          </p>
-                                      </div>
-                                      <div class="flex-1">
-                                          <p class="text-sm text-gray-600">
-                                              <strong>Humidity:</strong> {{ $latestData->humidity }}%
-                                          </p>
-                                      </div>
-                                  </div>
-                                @else
-                                    <p class="mt-4 text-sm text-gray-600">
-                                        No data available for this sensor.
-                                    </p>
-                                @endif
+                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                    @foreach ($sensors as $sensor)
+                        <div class="bg-white rounded-xl shadow-sm ring-1 ring-gray-900 ring-opacity-5 p-6">
+                            <!-- Header -->
+                            <div class="flex items-start justify-between mb-5">
+                                <div>
+                                    <h3 class="text-base font-semibold text-gray-900">{{ $sensor->name }}</h3>
+                                    <p class="text-xs text-gray-400 font-mono mt-0.5">{{ $sensor->mac }}</p>
+                                </div>
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium {{ $sensor->reachable ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
+                                    <span class="w-1.5 h-1.5 rounded-full {{ $sensor->reachable ? 'bg-green-500' : 'bg-red-500' }}"></span>
+                                    {{ $sensor->reachable ? 'Online' : 'Offline' }}
+                                </span>
                             </div>
+
+                            @if ($sensor->data->isEmpty())
+                                <p class="text-sm text-gray-500">No data available for this sensor.</p>
+                            @else
+                                @php
+                                    $latest = $sensor->data->last();
+
+                                    $temps = $sensor->data->pluck('temperature');
+                                    $minTemp = $temps->min();
+                                    $maxTemp = $temps->max();
+                                    $tempRange = max($maxTemp - $minTemp, 0.1);
+
+                                    $hums = $sensor->data->pluck('humidity');
+                                    $minHum = $hums->min();
+                                    $maxHum = $hums->max();
+                                    $humRange = max($maxHum - $minHum, 0.1);
+
+                                    $tempColor = $latest->temperature >= 28 ? 'text-red-500' : ($latest->temperature <= 15 ? 'text-blue-500' : 'text-gray-900');
+                                    $batteryColor = $latest->battery <= 20 ? 'bg-red-500' : ($latest->battery <= 50 ? 'bg-yellow-400' : 'bg-green-500');
+                                    $batteryTextColor = $latest->battery <= 20 ? 'text-red-500' : ($latest->battery <= 50 ? 'text-yellow-500' : 'text-green-600');
+                                @endphp
+
+                                <!-- Stat tiles -->
+                                <div class="grid grid-cols-3 gap-3 mb-5">
+                                    <div class="rounded-lg bg-gray-50 p-3 text-center">
+                                        <div class="text-2xl font-bold {{ $tempColor }}">{{ number_format($latest->temperature, 1) }}°</div>
+                                        <div class="text-xs text-gray-500 mt-1">Temp</div>
+                                    </div>
+                                    <div class="rounded-lg bg-gray-50 p-3 text-center">
+                                        <div class="text-2xl font-bold text-blue-600">{{ number_format($latest->humidity, 0) }}%</div>
+                                        <div class="text-xs text-gray-500 mt-1">Humidity</div>
+                                    </div>
+                                    <div class="rounded-lg bg-gray-50 p-3 text-center">
+                                        <div class="text-2xl font-bold {{ $batteryTextColor }}">{{ $latest->battery }}%</div>
+                                        <div class="text-xs text-gray-500 mt-1">Battery</div>
+                                    </div>
+                                </div>
+
+                                <!-- Battery level -->
+                                <div class="mb-5">
+                                    <div class="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                                        <div class="h-full rounded-full {{ $batteryColor }}" style="width: {{ $latest->battery }}%"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Temperature trend -->
+                                <div class="mb-4">
+                                    <div class="flex justify-between text-xs text-gray-500 mb-1.5">
+                                        <span class="font-medium text-gray-600">Temperature</span>
+                                        <span>{{ number_format($minTemp, 1) }}° – {{ number_format($maxTemp, 1) }}°</span>
+                                    </div>
+                                    <div class="flex items-end gap-px h-12">
+                                        @foreach ($sensor->data as $point)
+                                            @php $h = max((($point->temperature - $minTemp) / $tempRange) * 100, 8); @endphp
+                                            <div class="flex-1 bg-indigo-300 hover:bg-indigo-500 rounded-t-sm transition-colors"
+                                                 style="height: {{ $h }}%"
+                                                 title="{{ number_format($point->temperature, 1) }}° at {{ $point->created_at->format('H:i') }}">
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+
+                                <!-- Humidity trend -->
+                                <div>
+                                    <div class="flex justify-between text-xs text-gray-500 mb-1.5">
+                                        <span class="font-medium text-gray-600">Humidity</span>
+                                        <span>{{ number_format($minHum, 0) }}% – {{ number_format($maxHum, 0) }}%</span>
+                                    </div>
+                                    <div class="flex items-end gap-px h-12">
+                                        @foreach ($sensor->data as $point)
+                                            @php $h = max((($point->humidity - $minHum) / $humRange) * 100, 8); @endphp
+                                            <div class="flex-1 bg-blue-300 hover:bg-blue-500 rounded-t-sm transition-colors"
+                                                 style="height: {{ $h }}%"
+                                                 title="{{ number_format($point->humidity, 0) }}% at {{ $point->created_at->format('H:i') }}">
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+
+                                <p class="text-xs text-gray-400 mt-5">Updated {{ $latest->created_at->diffForHumans() }}</p>
+                            @endif
                         </div>
                     @endforeach
                 </div>
             @endif
         </div>
     </div>
-
-    <!-- Include Chart.js library -->
-    <script src="{{ asset('lib/chartjs/chart.umd.min.js') }}"></script>
-    <script>
-        for(chart of document.getElementsByClassName("chart")) {
-          const data = JSON.parse(chart.dataset.chartdata);
-          const formatDate = (dateStr) => {
-            const date = new Date(dateStr);
-            const day = date.getDate();
-            const month = date.getMonth() + 1;
-            const year = date.getFullYear().toString().slice(-2);
-            const hours = date.getHours();
-            const minutes = ('0' + date.getMinutes()).slice(-2);
-            return `${day}.${month}.${year}: ${hours}.${minutes}`;
-          }
-          new Chart(chart, { type: 'line', data: {
-                labels: data.map(x => formatDate(x.created_at)),
-                datasets: [ { label: 'Temp °C', data: data.map(x => x.temperature) },
-                  { label: 'Humidity %', data: data.map(x => x.humidity) }
-                ]
-              }
-            }
-          );
-        }
-    </script>
 @endsection
