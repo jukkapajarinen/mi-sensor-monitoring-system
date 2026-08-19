@@ -5,23 +5,17 @@ namespace App\Http\Controllers;
 use App\Models\Sensor;
 use Illuminate\Http\Request;
 
-class SensorController extends Controller
+class SensorController
 {
     /**
-     * Display the list of Sensors.
+     * Display the sensor list along with the add-sensor form.
      */
     public function list()
     {
-        $sensors = Sensor::with('data')->get();
-        return view('sensors.list', compact('sensors'));
-    }
-
-    /**
-     * Display the form to create a new sensor.
-     */
-    public function create()
-    {
-        return view('sensors.create');
+        return view('sensors', [
+            'sensors' => Sensor::with('data')->get(),
+            'editingSensor' => null,
+        ]);
     }
 
     /**
@@ -40,11 +34,14 @@ class SensorController extends Controller
     }
 
     /**
-     * Display the form to edit an existing sensor.
+     * Display the sensor list with the edit form for the given sensor.
      */
     public function edit(Sensor $sensor)
     {
-        return view('sensors.edit', compact('sensor'));
+        return view('sensors', [
+            'sensors' => Sensor::with('data')->get(),
+            'editingSensor' => $sensor,
+        ]);
     }
 
     /**

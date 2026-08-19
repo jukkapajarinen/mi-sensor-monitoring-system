@@ -1,10 +1,12 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Dashboard') }}
-        </h2>
-    </x-slot>
+@extends('layouts.app')
 
+@section('header')
+    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        {{ __('Dashboard') }}
+    </h2>
+@endsection
+
+@section('content')
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             @if($sensors->isEmpty())
@@ -27,7 +29,7 @@
                                 @if($sensor->data->isNotEmpty())
                                     <!-- Chart canvas -->
                                     <div class="mt-4">
-                                      <canvas class="chart" id="chart_{{ $sensor->id }}" 
+                                      <canvas class="chart" id="chart_{{ $sensor->id }}"
                                               data-chartdata="{{ $sensor->data->toJson() }}"></canvas>
                                     </div>
                                     @php
@@ -62,9 +64,9 @@
             @endif
         </div>
     </div>
-    
+
     <!-- Include Chart.js library -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ asset('lib/chartjs/chart.umd.min.js') }}"></script>
     <script>
         for(chart of document.getElementsByClassName("chart")) {
           const data = JSON.parse(chart.dataset.chartdata);
@@ -87,4 +89,4 @@
           );
         }
     </script>
-</x-app-layout>
+@endsection
